@@ -1,0 +1,26 @@
+{
+  "entities": [
+    {
+      "id": "1",
+      "cname": "Ayurvedagram Heritage Wellness Center",
+      "whitelist": ["Ayurvedagram Heritage Wellness", "Ayurvedagram Heritage ", "Ayurvedagram Heritage Center", "Ayurvedagram", "Ayurvedagram Center", "Ayurvedagram Wellness"]
+    },
+    {
+      "id": "2",
+      "cname": "indus valley ayurvedic center",
+      "whitelist": ["indus valley ayurvedic", "indus valley", "indus", "indus center", "indus valley center", "indus karnataka"]
+    },
+    {
+      "id": "3",
+      "cname": "Soukya international holistic center",
+      "whitelist": ["Soukya center", "soukya international", "soukya holistic", "soukya"]
+    },
+    {
+      "id": "4",
+      "cname": "Swaswara",
+      "whitelist": ["swaswara center", "swaswara wellness center", "swaswara wellness"]
+    }
+    
+  ]
+}
+
