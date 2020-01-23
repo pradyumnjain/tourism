@@ -16,7 +16,7 @@ def welcome(request, responder):
     responder.listen()
 
 @app.handle(intent='get_attraction')
-def send_store_hours(request, responder):
+def get_attraction(request, responder):
     active_store = None
     store_entity = next((e for e in request.entities if e['type'] == 'store_name'), None)
     if store_entity:
@@ -46,7 +46,7 @@ def send_store_hours(request, responder):
 
 
 @app.handle(intent='get_essentials')
-def send_store_hours(request, responder):
+def get_essentials(request, responder):
     active_store = None
     store_entity = next((e for e in request.entities if e['type'] == 'store_name'), None)
     if store_entity:
