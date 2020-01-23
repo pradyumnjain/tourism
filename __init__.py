@@ -15,7 +15,7 @@ def welcome(request, responder):
                              'for your local Kwik-E-Mart. How can I help?')
     responder.listen()
 
-@app.handle(intent='get_store_hours')
+@app.handle(intent='get_attraction')
 def send_store_hours(request, responder):
     active_store = None
     store_entity = next((e for e in request.entities if e['type'] == 'store_name'), None)
@@ -35,33 +35,62 @@ def send_store_hours(request, responder):
         active_store = request.frame['target_store']
 
     if active_store:
-        responder.slots['store_name'] = active_store['store_name']
-        responder.slots['open_time'] = active_store['open_time']
+        responder.slots['store_name'] = active_store['cname']
+        responder.slots['attractions'] = active_store['attractions']
         responder.slots['close_time'] = active_store['close_time']
-        responder.reply('The {store_name} Kwik-E-Mart opens at {open_time} and '
-                        'closes at {close_time}.')
+        responder.reply('The {store_name} has the following attractions {attractions}')
         return
 
     responder.reply('Which store would you like to know about?')
     responder.listen()
 
 
-@app.handle(intent='find_nearest_store')
-def send_nearest_store(request, responder):
-    try:
-        user_location = request.context['location']
-    except KeyError:
-        responder.reply("I'm not sure. You haven't told me where you are!")
-        responder.suggest([{'type': 'location', 'text': 'Share your location'}])
+@app.handle(intent='get_essentials')
+def send_store_hours(request, responder):
+    active_store = None
+    store_entity = next((e for e in request.entities if e['type'] == 'store_name'), None)
+    if store_entity:
+        try:
+            stores = app.question_answerer.get(index='stores', id=store_entity['value']['id'])
+        except TypeError:
+            # failed to resolve entity
+            stores = app.question_answerer.get(index='stores', store_name=store_entity['text'])
+        try:
+            active_store = stores[0]
+            responder.frame['target_store'] = active_store
+        except IndexError:
+            # No active store... continue
+            pass
+    elif 'target_store' in request.frame:
+        active_store = request.frame['target_store']
+
+    if active_store:
+        responder.slots['store_name'] = active_store['cname']
+        responder.slots['essentials'] = active_store['essentials']
+        responder.reply('while travelling to {store_name} you should carry  {essentials}')
         return
 
-    stores = app.question_answerer.get(index='stores', _sort='location', _sort_type='distance',
-                                       _sort_location=user_location)
-    target_store = stores[0]
-    responder.slots['store_name'] = target_store['store_name']
+    responder.reply('Which store would you like to know about?')
+    responder.listen()
 
-    responder.frame['target_store'] = target_store
-    responder.reply('Your nearest Kwik-E-Mart is located at {store_name}.')
+
+
+# @app.handle(intent='find_nearest_store')
+# def send_nearest_store(request, responder):
+#     try:
+#         user_location = request.context['location']
+#     except KeyError:
+#         responder.reply("I'm not sure. You haven't told me where you are!")
+#         responder.suggest([{'type': 'location', 'text': 'Share your location'}])
+#         return
+
+#     stores = app.question_answerer.get(index='stores', _sort='location', _sort_type='distance',
+#                                        _sort_location=user_location)
+#     target_store = stores[0]
+#     responder.slots['store_name'] = target_store['store_name']
+
+#     responder.frame['target_store'] = target_store
+#     responder.reply('Your nearest Kwik-E-Mart is located at {store_name}.')
 
 @app.handle(intent='exit')
 def say_goodbye(request, responder):
